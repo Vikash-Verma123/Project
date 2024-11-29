@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cricket World Cup Ticket Booking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 600px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-size: 1rem;
+      color: #333;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .name-inputs {
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      width: 100%;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .summary {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    .summary p {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Cricket World Cup Ticket Booking</h1>
+    
+    <label for="match-date">Select Match Date:</label>
+    <select id="match-date">
+      <option value="2024-10-20">October 20, 2024 - India vs Australia</option>
+      <option value="2024-10-22">October 22, 2024 - England vs Pakistan</option>
+      <option value="2024-10-24">October 24, 2024 - South Africa vs New Zealand</option>
+      <option value="2024-10-26">October 26, 2024 - Sri Lanka vs Bangladesh</option>
+    </select>
+
+    <label for="ticket-type">Select Ticket Type:</label>
+    <select id="ticket-type">
+      <option value="Standard">Standard - $50</option>
+      <option value="VIP">VIP - $150</option>
+      <option value="Premium">Premium - $300</option>
+    </select>
+
+    <label for="number-of-tickets">Number of Tickets:</label>
+    <input type="number" id="number-of-tickets" value="1" min="1" onchange="generateNameInputs()">
+
+    <div class="name-inputs" id="name-inputs">
+      <label for="name-1">Name for Ticket 1:</label>
+      <input type="text" id="name-1" placeholder="Enter your name" required>
+    </div>
+
+    <label for="email">Your Email:</label>
+    <input type="email" id="email" placeholder="Enter your email" required>
+
+    <button onclick="bookTickets()">Book Tickets</button>
+
+    <div class="summary" id="summary" style="display:none;">
+      <h2>Booking Summary</h2>
+      <p id="booking-summary"></p>
+      <button onclick="resetBooking()">Reset</button>
+    </div>
+  </div>
+
+  <script>
+    // Function to generate name inputs based on the number of tickets selected
+    function generateNameInputs() {
+      const numberOfTickets = parseInt(document.getElementById("number-of-tickets").value);
+      const nameInputsDiv = document.getElementById("name-inputs");
+      nameInputsDiv.innerHTML = '';
+
+      for (let i = 1; i <= numberOfTickets; i++) {
+        const label = document.createElement("label");
+        label.setAttribute("for", `name-${i}`);
+        label.textContent = `Name for Ticket ${i}:`;
+
+        const input = document.createElement("input");
+        input.setAttribute("type", "text");
+        input.setAttribute("id", `name-${i}`);
+        input.setAttribute("placeholder", `Enter name for Ticket ${i}`);
+
+        nameInputsDiv.appendChild(label);
+        nameInputsDiv.appendChild(input);
+      }
+    }
+
+    // Function to calculate and display the booking summary
+    function bookTickets() {
+      const matchDate = document.getElementById("match-date").value;
+      const ticketType = document.getElementById("ticket-type").value;
+      const numberOfTickets = parseInt(document.getElementById("number-of-tickets").value);
+      const email = document.getElementById("email").value;
+
+      // Ticket prices based on type
+      const ticketPrices = {
+        "Standard": 50,
+        "VIP": 150,
+        "Premium": 300
+      };
+
+      const pricePerTicket = ticketPrices[ticketType];
+      const totalPrice = pricePerTicket * numberOfTickets;
+
+      // Collect names for all tickets
+      const names = [];
+      for (let i = 1; i <= numberOfTickets; i++) {
+        const name = document.getElementById(`name-${i}`).value;
+        if (!name) {
+          alert(`Please enter a name for Ticket ${i}.`);
+          return;
+        }
+        names.push(name);
+      }
+
+      // Validate user inputs
+      if (!email || !matchDate || isNaN(numberOfTickets) || numberOfTickets <= 0) {
+        alert("Please fill in all fields correctly.");
+        return;
+      }
+
+      // Display the booking summary
+      const bookingSummary = `
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Match Date:</strong> ${new Date(matchDate).toLocaleDateString()}</p>
+        <p><strong>Ticket Type:</strong> ${ticketType}</p>
+        <p><strong>Number of Tickets:</strong> ${numberOfTickets}</p>
+        <p><strong>Names:</strong> ${names.join(', ')}</p>
+        <p><strong>Total Price:</strong> $${totalPrice}</p>
+      `;
+
+      document.getElementById("booking-summary").innerHTML = bookingSummary;
+      document.getElementById("summary").style.display = "block";
+    }
+
+    // Function to reset the booking form
+    function resetBooking() {
+      document.getElementById("match-date").value = "2024-10-20";
+      document.getElementById("ticket-type").value = "Standard";
+      document.getElementById("number-of-tickets").value = "1";
+      document.getElementById("email").value = "";
+      generateNameInputs();  // Regenerate name input fields based on ticket count
+      document.getElementById("summary").style.display = "none";
+    }
+
+    // Generate initial name input for 1 ticket
+    generateNameInputs();
+  </script>
+
+</body>
+</html>
